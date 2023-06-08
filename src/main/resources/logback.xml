@@ -7,7 +7,7 @@
 <configuration scan="true" scanPeriod="30 seconds">
     <contextName>logback</contextName>
 
-    <property name="LOG_DIR" value="${log.dir:-/data/logs/fast-magic-api}"/>
+    <property name="LOG_DIR" value="${log.dir:-/logs/fast-magic-api}"/>
     <property name="LOG_NAME" value="fast-magic-api"/>
     <property name="LOG_FILE_NAME" value="${LOG_NAME}"/>
     <property name="LOG_WARN_FILE_NAME" value="${LOG_FILE_NAME}-warn"/>
