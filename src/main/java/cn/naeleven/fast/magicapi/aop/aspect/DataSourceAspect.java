@@ -28,7 +28,7 @@ public class DataSourceAspect {
         String classname = getClassName(joinPoint);
         String methodName = getMethodName(joinPoint);
         if (log.isDebugEnabled()) {
-            log.info("switch data source to [{}] in method [{}]",
+            log.debug("switch data source to [{}] in method [{}]",
                     DynamicDataSourceHolder.current(), classname + "." + methodName);
         }
     }
@@ -39,7 +39,7 @@ public class DataSourceAspect {
         String classname = getClassName(joinPoint);
         String methodName = getMethodName(joinPoint);
         if (log.isDebugEnabled()) {
-            log.info("clear data source to [{}] in method [{}]",
+            log.debug("clear data source to [{}] in method [{}]",
                     DynamicDataSourceHolder.current(), classname + "." + methodName);
         }
     }
