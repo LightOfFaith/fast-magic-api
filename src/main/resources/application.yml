@@ -1,0 +1,198 @@
+server:
+  shutdown: graceful
+spring:
+  datasource:
+    druid:
+      # 连接池初始连接数
+      initial-size: 5
+      # 允许的最大同时使用中(在被业务线程持有，还没有归还给druid) 的连接数
+      max-active: 20
+      # 允许的最小空闲连接数，空闲连接超时踢除过程会最少保留的连接数
+      min-idle: 5
+      # 从连接池获取连接的最大等待时间800毫秒；业务方根据可以自行调整
+      max-wait: 800
+      # 一条物理连接的最大存活时间120分钟
+      phy-timeout-millis: 7200000
+      # 强行关闭从连接池获取而长时间未归还给druid的连接(认为异常连接）
+      remove-abandoned: false
+      # 异常连接判断条件，超过180秒 则认为是异常的，需要强行关闭
+      remove-abandoned-timeout: 180
+      # 从连接池获取到连接后，如果超过被空闲剔除周期，是否做一次连接有效性检查
+      test-while-idle: true
+      # 从连接池获取连接后，是否马上执行一次检查
+      test-on-borrow: false
+      # 归还连接到连接池时是否马上做一次检查
+      test-on-return: false
+      # 连接有效性检查的SQL
+      validation-query: SELECT 1
+      # 连接有效性检查的超时时间1秒
+      validation-query-timeout: 1
+      # 周期性剔除长时间呆在池子里未被使用的空闲连接，10秒一次
+      time-between-eviction-runs-millis: 10000
+      # 空闲多久可以认为是空闲太长而需要剔除44秒
+      min-evictable-idle-time-millis: 44000
+      # 如果空闲时间太长即使连接池所剩连接 < minIdle 也会被剔除 55 秒
+      max-evictable-idle-time-millis: 55000
+      # 是否设置自动提交，相当于每个语句一个事务
+      default-auto-commit: true
+      # 记录被判定为异常的连接
+      log-abandoned: true
+      # 网络读取超时，网络连接超时
+      # socketTimeout : 对于线上业务小于5秒，对于执行时间较长的业务的SQL，需要设置大一点
+      connection-properties: socketTimeout=3000;connectTimeout=1200
+      filters: stat,slf4j,wall
+      filter:
+        # 统计监控信息
+        stat:
+          enabled: true
+          db-type: mysql
+          # 开启慢sql监控，超过2秒，就认为是慢sql，记录到日志中
+          slow-sql-millis: 2000
+          log-slow-sql: true
+        # 日志监控，使用 slf4j 进行日志输出
+        slf4j:
+          enabled: true
+          statement-create-after-log-enabled: false
+          connection-close-after-log-enabled: false
+          result-set-open-after-log-enabled: false
+          statement-close-after-log-enabled: false
+          statement-log-error-enabled: true
+      ########## 配置WebStatFilter采集web-jdbc关联监控的数据 ##########
+      web-stat-filter:
+        enabled: true
+        url-pattern: /*
+        exclusions: '*.js,*.gif,*.jpg,*.png,*.css,*.ico,/druid/*'
+        session-stat-enable: true
+        session-stat-max-count: 1000
+      ########## 配置StatViewServlet用于展示Druid的统计信息 ##########
+      stat-view-servlet:
+        enabled: true
+        url-pattern: /druid/*
+        # 允许清空统计数据
+        reset-enable: false
+        # 用户名
+        login-username: druid
+        # 密码
+        login-password: druid@!
+        # 允许访问的地址，如果allow没有配置或者为空，则允许所有访问
+        allow: 127.0.0.1
+        # 拒绝访问的地址，deny优先于allow，如果在deny列表中，就算在allow列表中，也会被拒绝。
+        #deny:
+  redis:
+    jedis:
+      pool:
+        min-idle: 5
+        max-idle: 10
+        max-active: 5
+        max-wait: 1ms
+  mvc:
+    throw-exception-if-no-handler-found: true
+
+magic-api:
+  # 配置web页面入口
+  web: /magic/web
+  # 配置存储方式
+  resource:
+    type: database
+    # 数据库中的表名
+    tableName: magic_api_file
+    # 指定数据源（单数据源时无需配置，多数据源时默认使用主数据源，如果存在其他数据源中需要指定。）
+    datasource: default
+    # 前缀
+    prefix: /magic-api
+    # 是否为只读模式
+    readonly: false
+  # 接口前缀，可以不配置
+  prefix: /
+  # 自动导入的模块
+  auto-import-module: db
+  # 自动导包
+  auto-import-package: java.lang.*,java.util.*
+  # 禁止覆盖应用接口
+  allow-override: false
+  # 启用驼峰命名转换
+  sql-column-case: camel
+  # 编辑器配置
+  editor-config: classpath:./magic-editor-config.js
+  # 跨域支持，默认开启
+  support-cross-domain: true
+  # 远程推送时的秘钥，未配置则不开启推送
+  secret-key: 123456789
+  # 远程推送的路径，默认为/_magic-api-sync
+  push-path: /_magic-api-sync
+  # 配置打印SQL
+  show-sql: true
+  # 配置编译缓存容量
+  compile-cache-size: 500
+  # 是否持久化保存ResponseBody
+  persistence-response-body: true
+  # 配置请求参数支持的日期格式
+  date-pattern:
+    - yyyyMMdd
+    - yyyy-MM-dd
+    - yyyyMMddHHmmss
+    - yyyy-MM-dd HH:mm:ss
+  # 配置JSON格式，格式为magic-script中的表达式
+  response: |-
+    {
+      code: code,
+      message: message,
+      data
+    }
+  response-code:
+    # 执行成功的code值
+    success: 200
+    # 参数验证未通过的code值
+    invalid: 400
+    # 执行出现异常的code值
+    exception: 500
+  # 打印banner
+  banner: false
+  # async线程池大小
+  thread-pool-executor-size: 8
+  # 执行出错时是否抛出异常
+  throw-exception: false
+  # 备份相关配置
+  backup:
+    # 是否启用
+    enable: true
+    # 备份保留天数，-1为永久保留
+    max-history: 30
+    # 指定数据源（单数据源时无需配置，多数据源时默认使用主数据源，如果存在其他数据源中需要指定。）
+    datasource: default
+    # 使用数据库存储备份时的表名
+    table-name: magic_api_backup
+  # CRUD相关配置
+  crud:
+    logic-delete-column: deleted #逻辑删除列
+    logic-delete-value: 1 #逻辑删除值
+  # 缓存相关配置
+  cache:
+    # 缓存容量
+    capacity: 10000
+    # -1为永不过期
+    ttl: -1
+    # 启用缓存
+    enable: true
+  page:
+    # 页大小的参数名称
+    size: pageSize # body?.pageSize
+    # 页码的参数名称
+    page: pageNumber # body?.pageNumber
+    # 未传页码时的默认首页
+    default-page: 1
+    # 未传页大小时的默认页大小
+    default-size: 10
+  swagger:
+    version: 1.0
+    description: MagicAPI 接口信息
+    title: MagicAPI Swagger Docs
+    name: MagicAPI 接口
+    location: /v2/api-docs/magic-api/swagger2.json
+  security:
+    username: admin # 登录用的用户名
+    password: 123456 # 登录用的密码
+  debug:
+    # 断点超时时间，默认60s
+    timeout: 60
+
