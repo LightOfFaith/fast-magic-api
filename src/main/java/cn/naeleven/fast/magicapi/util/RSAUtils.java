@@ -18,21 +18,21 @@ import java.util.List;
  * RSAUtils 加解密
  */
 public class RSAUtils {
-    private static final String KEY_ALGORITHM = "RSA" ;
-    private static final String SIGNATURE_ALGORITHM = "SHA1withRSA" ;
+    private static final String KEY_ALGORITHM = "RSA";
+    private static final String SIGNATURE_ALGORITHM = "SHA1withRSA";
 
-    private static final String BEGIN_ENCRYPTED_PRIVATE_KEY = "-----BEGIN ENCRYPTED PRIVATE KEY-----" ;
-    private static final String END_ENCRYPTED_PRIVATE_KEY = "-----END ENCRYPTED PRIVATE KEY-----" ;
-    private static final String BEGIN_RSA_PRIVATE_KEY = "-----BEGIN RSA PRIVATE KEY-----" ;
-    private static final String END_RSA_PRIVATE_KEY = "-----END RSA PRIVATE KEY-----" ;
+    private static final String BEGIN_ENCRYPTED_PRIVATE_KEY = "-----BEGIN ENCRYPTED PRIVATE KEY-----";
+    private static final String END_ENCRYPTED_PRIVATE_KEY = "-----END ENCRYPTED PRIVATE KEY-----";
+    private static final String BEGIN_RSA_PRIVATE_KEY = "-----BEGIN RSA PRIVATE KEY-----";
+    private static final String END_RSA_PRIVATE_KEY = "-----END RSA PRIVATE KEY-----";
 
-    private static final String BEGIN_PRIVATE_KEY = "-----BEGIN PRIVATE KEY-----" ;
-    private static final String END_PRIVATE_KEY = "-----END PRIVATE KEY-----" ;
-    private static final String BEGIN_PUBLIC_KEY = "-----BEGIN PUBLIC KEY-----" ;
-    private static final String END_PUBLIC_KEY = "-----END PUBLIC KEY-----" ;
+    private static final String BEGIN_PRIVATE_KEY = "-----BEGIN PRIVATE KEY-----";
+    private static final String END_PRIVATE_KEY = "-----END PRIVATE KEY-----";
+    private static final String BEGIN_PUBLIC_KEY = "-----BEGIN PUBLIC KEY-----";
+    private static final String END_PUBLIC_KEY = "-----END PUBLIC KEY-----";
 
-    private static final String CHARSET_NAME = "UTF-8" ;
-    private static final String LINE_SPLIT = "\n" ;
+    private static final String CHARSET_NAME = "UTF-8";
+    private static final String LINE_SPLIT = "\n";
 
     private static final List<String> SKIP_STR = Lists.newArrayList(
             BEGIN_PRIVATE_KEY, END_PRIVATE_KEY, BEGIN_PUBLIC_KEY, END_PUBLIC_KEY,

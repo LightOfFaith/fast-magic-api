@@ -2,7 +2,7 @@ spring:
   datasource:
     primary:
       driver-class-name: com.mysql.cj.jdbc.Driver
-      url: jdbc:mysql://192.168.101.31:3306/fast-magic-api?useUnicode=true&characterEncoding=UTF-8&zeroDateTimeBehavior=convertToNull&serverTimezone=Asia/Shanghai
+      url: jdbc:mysql://192.168.145.1:3306/fast-magic-api?useUnicode=true&characterEncoding=UTF-8&zeroDateTimeBehavior=convertToNull&serverTimezone=Asia/Shanghai
       username: vmuser
       password: vmuser@1+2=3?yes
   redis:
@@ -15,11 +15,11 @@ magic-api:
   datasource:
     multi:
       - name: ds1
-        url: jdbc:mysql://192.168.101.31:3306/fast-magic-api?useUnicode=true&characterEncoding=UTF-8&zeroDateTimeBehavior=convertToNull&serverTimezone=Asia/Shanghai
+        url: jdbc:mysql://192.168.145.1:3306/fast-magic-api?useUnicode=true&characterEncoding=UTF-8&zeroDateTimeBehavior=convertToNull&serverTimezone=Asia/Shanghai
         username: vmuser
         password: vmuser@1+2=3?yes
       - name: ds2
-        url: jdbc:mysql://192.168.101.31:3306/fast-magic-api?useUnicode=true&characterEncoding=UTF-8&zeroDateTimeBehavior=convertToNull&serverTimezone=Asia/Shanghai
+        url: jdbc:mysql://192.168.145.1:3306/fast-magic-api?useUnicode=true&characterEncoding=UTF-8&zeroDateTimeBehavior=convertToNull&serverTimezone=Asia/Shanghai
         username: vmuser
         password: vmuser@1+2=3?yes
 

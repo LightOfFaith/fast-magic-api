@@ -32,7 +32,7 @@ public class CustomRequestInterceptor implements RequestInterceptor {
                 return new JsonBean<>(401, "用户未登录");
             }
             // TODO 调用登录鉴权服务
-            String username = "" ;
+            String username = "";
             if (StringUtils.isBlank(username)) {
                 return new JsonBean<>(401, "用户未登录");
             }

@@ -16,6 +16,6 @@ import static java.lang.annotation.RetentionPolicy.RUNTIME;
 @Retention(RUNTIME)
 public @interface CurrentDataSource {
 
-    String value() default "" ;
+    String value() default "";
 
 }

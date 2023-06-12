@@ -1,0 +1,121 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- scan : 是否在运行时扫描配置文件是否更新，如果更新时则重新解析并更新配置。
+            如果更改后的配置文件有语法错误，则会回退到之前的配置文件。默认 false
+     scanPeriod : 多久扫描一次配置文件是否修改，单位可以是毫秒、秒、分钟或者小时。
+                  默认情况下，一分钟扫描一次配置文件。
+ -->
+<configuration scan="true" scanPeriod="30 seconds">
+    <contextName>logback</contextName>
+
+    <springProperty scop="context" name="APP_NAME" source="spring.application.name" defaultValue=""/>
+
+    <property name="LOG_DIR" value="${LOG_DIR:-/logs/${APP_NAME}}"/>
+    <property name="LOG_NAME" value="${APP_NAME}"/>
+    <property name="LOG_FILE_NAME" value="${LOG_NAME}"/>
+    <property name="LOG_ERROR_FILE_NAME" value="${LOG_ERROR_FILE_NAME:-${LOG_FILE_NAME:-}-error}"/>
+    <property name="LOG_CHARSET" value="${LOG_CHARSET:-${file.encoding:-UTF-8}}"/>
+    <property name="LOG_MAX_HISTORY" value="${LOG_MAX_HISTORY:-180}"/>
+    <property name="LOG_ERROR_MAX_HISTORY" value="${LOG_ERROR_MAX_HISTORY:-7}"/>
+    <property name="LOG_ASYNC_QUEUE_SIZE" value="${LOG_ASYNC_QUEUE_SIZE:-1024}"/>
+    <property name="LOG_LEVEL" value="${LOG_LEVEL:-INFO}"/>
+
+    <!-- see https://logback.qos.ch/manual/layouts.html -->
+    <!--格式化输出
+        %d 表示日期，%thread 表示线程名，%-5level 级别从左显示5个字符宽度，%logger logger name最多36字节，
+        %L/%line 输出发出日志记录请求的行号。生成行号信息的速度不是特别快。因此，除非执行速度不是问题，否则应该避免使用它。
+        %msg 日志消息，%n 是换行符
+    -->
+
+    <property name="STDOUT_LOG_FORMAT_PATTERN"
+              value="[%d{yyyy-MM-dd HH:mm:ss.SSS}][${APP_NAME:-},%X{traceId:-},%X{spanId:-}][${PID:-}][%thread][%-5level][%logger{36}:%method:%line] - %msg%n"/>
+    <property name="FILE_LOG_FORMAT_PATTERN"
+              value="[%d{yyyy-MM-dd HH:mm:ss.SSS}][${APP_NAME:-},%X{traceId:-},%X{spanId:-}][${PID:-}][%thread][%-5level][%logger{36}] - %msg%n"/>
+
+    <appender name="STDOUT" class="ch.qos.logback.core.ConsoleAppender">
+        <encoder charset="${LOG_CHARSET}">
+            <pattern>${STDOUT_LOG_FORMAT_PATTERN}</pattern>
+        </encoder>
+    </appender>
+
+    <!-- 主日志 -->
+    <appender name="FILE" class="ch.qos.logback.core.rolling.RollingFileAppender">
+        <file>${LOG_DIR}/${LOG_FILE_NAME}.log</file>
+        <!-- immediateFlush 设置为true。会立即刷新输出流可确保立即写出日志记录，并且在应用程序未正确关闭就退出时，不会丢失日志记录。 -->
+        <immediateFlush>true</immediateFlush>
+        <!-- 滚动策略，它根据时间和文件大小来制定滚动策略 -->
+        <rollingPolicy class="ch.qos.logback.core.rolling.SizeAndTimeBasedRollingPolicy">
+            <!-- 滚动文件名称 -->
+            <fileNamePattern>${LOG_DIR}/${LOG_FILE_NAME}.log.%d{yyyyMMdd}.%i.tar.gz</fileNamePattern>
+            <!-- 日志文件保留天数 -->
+            <maxHistory>${LOG_MAX_HISTORY}</maxHistory>
+            <!-- 日志文件最大大小。当日志文件超过maxFileSize指定的大小时，会根据上面提到的%i进行日志文件滚动，从0开始 -->
+            <maxFileSize>10MB</maxFileSize>
+            <!-- 日志文件总大小上限 -->
+            <totalSizeCap>10GB</totalSizeCap>
+        </rollingPolicy>
+        <append>true</append>
+        <encoder charset="${LOG_CHARSET}">
+            <pattern>${FILE_LOG_FORMAT_PATTERN}</pattern>
+        </encoder>
+    </appender>
+
+    <appender name="ERROR" class="ch.qos.logback.core.rolling.RollingFileAppender">
+        <file>${LOG_DIR}/${LOG_ERROR_FILE_NAME}.log</file>
+        <!-- immediateFlush 设置为true。会立即刷新输出流可确保立即写出日志记录，并且在应用程序未正确关闭就退出时，不会丢失日志记录。 -->
+        <immediateFlush>true</immediateFlush>
+        <!-- 滚动策略，它根据时间和文件大小来制定滚动策略 -->
+        <rollingPolicy class="ch.qos.logback.core.rolling.SizeAndTimeBasedRollingPolicy">
+            <!-- 滚动文件名称 -->
+            <fileNamePattern>${LOG_DIR}/${LOG_ERROR_FILE_NAME}.log.%d{yyyyMMdd}.%i.tar.gz</fileNamePattern>
+            <!-- 日志文件保留天数 -->
+            <maxHistory>${LOG_ERROR_MAX_HISTORY}</maxHistory>
+            <!-- 日志文件最大大小。当日志文件超过maxFileSize指定的大小时，会根据上面提到的%i进行日志文件滚动，从0开始 -->
+            <maxFileSize>10MB</maxFileSize>
+            <!-- 日志文件总大小上限 -->
+            <totalSizeCap>10GB</totalSizeCap>
+        </rollingPolicy>
+        <append>true</append>
+        <encoder charset="${LOG_CHARSET}">
+            <pattern>${FILE_LOG_FORMAT_PATTERN}</pattern>
+        </encoder>
+        <!--过滤器，只记录 ERROR 级别的日志-->
+        <filter class="ch.qos.logback.classic.filter.LevelFilter">
+            <level>ERROR</level>
+            <onMatch>ACCEPT</onMatch>
+            <onMismatch>DENY</onMismatch>
+        </filter>
+    </appender>
+
+    <!-- 异步日志 -->
+    <appender name="ASYNC_FILE" class="ch.qos.logback.classic.AsyncAppender">
+        <!-- 不丢弃日志，默认情况下，当队列容量达到 80% 时，logback 将会丢弃 TRACE、DEBUG、INFO 级别的日志。 -->
+        <discardingThreshold>0</discardingThreshold>
+        <queueSize>${LOG_ASYNC_QUEUE_SIZE}</queueSize>
+        <appender-ref ref="FILE"/>
+    </appender>
+
+    <springProfile name="local">
+        <root level="DEBUG" additivity="false">
+            <appender-ref ref="STDOUT"/>
+            <appender-ref ref="ERROR"/>
+            <appender-ref ref="FILE"/>
+        </root>
+    </springProfile>
+
+    <springProfile name="dev">
+        <root level="${LOG_LEVEL}" additivity="false">
+            <appender-ref ref="STDOUT"/>
+            <appender-ref ref="ERROR"/>
+            <appender-ref ref="FILE"/>
+        </root>
+    </springProfile>
+
+    <springProfile name="prod">
+        <root level="${LOG_LEVEL}" additivity="false">
+            <appender-ref ref="STDOUT"/>
+            <appender-ref ref="ERROR"/>
+            <appender-ref ref="FILE"/>
+        </root>
+    </springProfile>
+
+</configuration>
